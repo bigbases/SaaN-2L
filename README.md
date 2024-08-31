@@ -1,5 +1,5 @@
 # SaaN 2L-GRL: Two-Level Graph Representation Learning Empowered with Subgraph-as-a-Node
-This paper has been submitted for publication in TKDE 2024.
+This paper has been submitted for publication in [TKDE 2024](https://ieeexplore.ieee.org/document/10595395).
 
 ## Abstract
 
