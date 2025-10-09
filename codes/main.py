@@ -4,10 +4,24 @@ random.seed(0)
 import numpy as np
 np.random.seed(0)
 
-import argument
+import argparse
+from communityDetection import *
+from graphConstructor import *
+from collections import defaultdict, Counter
+import stellargraph as sg
 
 def main():
-    args, unknown = argument.parse_args()
+    
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--task',default='node')
+    parser.add_argument('--model', default='gcn')
+    parser.add_argument('--dataset', default='CiteSeer')
+    parser.add_argument('--cd_algo', default='LP')
+    
+    size_thresh = 100
+
+    args = parser.parse_args()
     
     # Graph Construction 
     G, node_subjects = graphloader(args.dataset)
@@ -79,7 +93,7 @@ def main():
     cnt = 0
     deleted = []
     for v in range(superG.vcount()):
-        if superG.vs['_nx_name'][v] in minor_nodes_features:
+        if superG.vs['_nx_name'][v] in minor_commuID:
             deleted.append(v)
             cnt += 1
     print(cnt)
@@ -92,7 +106,7 @@ def main():
 
     # Base model and Global GRL Training 
     if args.model == 'gcn':
-        from models import GCN
+        from gcn import GCN
         if args.task == 'node': 
             X_base = GCN.node_classification(G, node_subjects, args) # Base model 
             X_CaaN = GCN.node_classification(CaaN_sg, CaaN_subjects, args) # Global GRL
@@ -101,7 +115,7 @@ def main():
             X_CaaN = GCN.link_prediction(CaaN_sg, args)
 
     elif args.model == 'graphsage':
-        from models import GraphSAGE
+        from graphsage import GraphSAGE
         if args.task == 'node': 
             X_base = GraphSAGE.node_classification(G, node_subjects, args)
             X_CaaN = GraphSAGE.node_classification(CaaN_sg, CaaN_subjects, args)
@@ -110,7 +124,7 @@ def main():
             X_CaaN = GraphSAGE.link_prediction(CaaN_sg, args)
 
     elif args.model == 'gat':
-        from models import GAT
+        from gat import GAT
         if args.task == 'node': 
             X_base = GAT.node_classification(G, node_subjects, args)
             X_CaaN = GAT.node_classification(CaaN_sg, CaaN_subjects, args)
@@ -119,7 +133,7 @@ def main():
             X_CaaN = GAT.link_prediction(CaaN_sg, args)
 
     elif args.model == 'node2vec':
-        from models import Node2Vec
+        from node2vec import Node2Vec
         if args.task == 'node': 
             X_base = Node2Vec.node_classification(G, node_subjects, args)
             X_CaaN = Node2Vec.node_classification(CaaN_sg, CaaN_subjects, args)
