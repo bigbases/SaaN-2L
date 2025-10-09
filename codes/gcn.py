@@ -1,9 +1,9 @@
 import pandas as pd
 import os
-
+import time
 import stellargraph as sg
 from stellargraph.mapper import FullBatchNodeGenerator
-from stellargraph.layer import GCN, LinkEmbedding
+from stellargraph.layer import GCN as GCN_l, LinkEmbedding
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow import keras
 
@@ -16,6 +16,8 @@ import matplotlib.pyplot as plt
 class GCN():
     def node_classification(G, node_subjects, args):
         # Splitting the data
+        train_size = 300
+        test_size=300
         train_subjects, test_subjects = model_selection.train_test_split(node_subjects, train_size=train_size, test_size=None, stratify=node_subjects)
         val_subjects, test_subjects = model_selection.train_test_split(test_subjects, train_size=test_size, test_size=None, stratify=test_subjects)
 
@@ -32,9 +34,7 @@ class GCN():
         generator = FullBatchNodeGenerator(G, method="gcn")
         train_gen = generator.flow(train_subjects.index, train_targets)
 
-        gcn = GCN(
-        layer_sizes=[16, 16], activations=["relu", "relu"], generator=generator, dropout=0.5
-        )
+        gcn = GCN_l(layer_sizes=[16, 16], activations=["relu", "relu"], generator=generator, dropout=0.5)
 
         x_inp, x_out = gcn.in_out_tensors()
         predictions = layers.Dense(units=train_targets.shape[1], activation="softmax")(x_out)
