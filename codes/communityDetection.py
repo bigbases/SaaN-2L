@@ -19,7 +19,7 @@ def communityDetector(ig, algo_str):
     elif algo == 'IM':
         cd_algo = Graph.community_infomap(ig)
 
-    print("####### %s Community Detection Complete (time elapsed: %.2fs) #######" %(dataset_str, time.time() - start))
+    print("####### %s Community Detection Complete (time elapsed: %.2fs) #######" %(algo_str, time.time() - start))
     print()
     print(cd_algo.summary())
     return cd_algo
