@@ -9,7 +9,7 @@ from tensorflow import keras
 
 from tensorflow.keras import layers, optimizers, losses, metrics, Model
 from sklearn import preprocessing, feature_extraction, model_selection
-from IPython.display import display, HTML
+# from IPython.display import display, HTML
 import matplotlib.pyplot as plt
 
 
