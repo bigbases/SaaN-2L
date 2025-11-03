@@ -142,18 +142,29 @@ def main():
             X_CaaN = Node2Vec.link_prediction(CaaN_sg, args)
 
     start = time.time()
-    node_embeddings = X 
+    node_embeddings = defaultdict(lambda: np.zeros(128))
+    j = 0
+    for community_no in range(len(cd_algo)):
+        # Intra Community Embedding   
+        if len(cd_algo[community_no]) < size_thresh: # Minor community from global GRL
+            for i in cd_algo[community_no]:
+                node_embeddings[i] = X_CaaN[j]
+                j += 1
+        else: # reduced node to one
+            j += 1          
 
     # Local GRL 
     for commu in range(len(cd_algo)):
         if len(cd_algo[commu]) >= size_thresh: # If Major Community
-            sub_node_embeddings = subgraph_learning(cd_algo[commu], args)
+            sub_node_embeddings = GCN.subgraph_learning(cd_algo[commu], args)
             
             # Overwrite from subgraph embedding
             for i in cd_algo[commu]:
                 node_embeddings[i] = sub_node_embeddings[i]
 
     print("Local GRL Time : ",time.time() - start)
+
+ 
 
 
 if __name__ == "__main__":
