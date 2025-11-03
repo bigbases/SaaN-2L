@@ -156,7 +156,7 @@ def main():
     # Local GRL 
     for commu in range(len(cd_algo)):
         if len(cd_algo[commu]) >= size_thresh: # If Major Community
-            sub_node_embeddings = GCN.subgraph_learning(cd_algo[commu], args)
+            sub_node_embeddings = GCN.subgraph_learning(cd_algo[commu], fea_mat, node_subjects, args)
             
             # Overwrite from subgraph embedding
             for i in cd_algo[commu]:
