@@ -166,7 +166,7 @@ class GCN():
             print("\t{}: {:0.4f}".format(name, val))
 
 
-    def subgraph_learning(subgraphList, args):
+    def subgraph_learning(subgraphList, fea_mat,node_subjects,args):
         subgraph = ig.induced_subgraph(subgraphList,implementation="create_from_scratch")
         fea_mat_temp = fea_mat[fea_mat.index.isin(subgraph.vs['_nx_name'])] # subgraph들의 feature 추출
         
