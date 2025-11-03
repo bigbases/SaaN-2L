@@ -154,7 +154,7 @@ def main():
             j += 1          
 
     # Local GRL 
-    for commu in range(len(cd_algo)):
+    for commu in range(len(cd_algo)): # parallel processing is available here
         if len(cd_algo[commu]) >= size_thresh: # If Major Community
             sub_node_embeddings = GCN.subgraph_learning(cd_algo[commu], fea_mat, node_subjects, args)
             
@@ -163,6 +163,20 @@ def main():
                 node_embeddings[i] = sub_node_embeddings[i]
 
     print("Local GRL Time : ",time.time() - start)
+
+    # Merge two kinds of embeddings: Global and Local
+
+    node_embeddings_df = pd.DataFrame(node_embeddings).transpose()
+    ig = Graph.from_networkx(G.to_networkx()) # NetworkX to igraph 
+    ig.vs["id"] = ig.vs["_nx_name"]
+    merged_Graph = StellarGraph.from_networkx(ig.to_networkx(), node_features = node_embeddings_df) # Graph with trained embedding
+
+    # Downstream task with final embeddings
+
+    X_final_link = GCN.link_prediction(merged_Graph, args)
+    X_final_node = GCN.node_classification(merged_Graph, node_subjects, args)
+
+    
 
  
 
