@@ -123,6 +123,8 @@ class GAT():
         results = model_emb.evaluate(X_test, y_test, batch_size=128)
         print("test loss, test acc:", results)
 
+        return X
+
 
     def subgraph_learning(subgraphList):
         subgraph = ig.induced_subgraph(subgraphList,implementation="create_from_scratch")
