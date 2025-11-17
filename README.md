@@ -6,6 +6,9 @@ This paper has been submitted for publication in [TKDE 2024](https://ieeexplore.
 > In this study, we propose a novel graph representation learning (GRL) model, called Two-Level GRL with Subgraphas-a-Node (SaaN 2L-GRL in short), that partitions input graphs into smaller subgraphs for effective and scalable GRL in two levels: 1) local GRL and 2) global GRL. To realize the two-level GRL in an efficient manner, we propose an abstracted graph, called Subgraph-as-a-Node Graph (SaaN in short), to effectively maintain the high-level graph topology while significantly reducing the size of the graph. By applying the SaaN graph to both local and global GRL, SaaN 2L-GRL can effectively preserve the overall structure of the entire graph while precisely representing the nodes within each subgraph. Through time complexity analysis, we confirm that SaaN 2L-GRL significantly reduces the learning time of existing GRL models by using the SaaN graph for global GRL, instead of using the original graph and processing local GRL on subgraphs in parallel. Our extensive experiments show that SaaN 2L-GRL outperforms existing GRL models in both accuracy and efficiency. In addition, we show the effectiveness of SaaN 2L-GRL using diverse kinds of graph partitioning methods including five community detection algorithms and representative edge- and vertex-cut algorithms.
 
 ## Requirements
+```
+conda env create -f SaaN.yaml
+```
 - python==3.6.13
 - gensim==3.8.3
 - igraph==0.9.11
