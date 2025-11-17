@@ -7,7 +7,8 @@ from stellargraph.layer import GCN as GCN_l, LinkEmbedding
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow import keras
 import numpy as np
-
+from stellargraph.data import EdgeSplitter
+from stellargraph.mapper import FullBatchLinkGenerator
 from tensorflow.keras import layers, optimizers, losses, metrics, Model
 from sklearn import preprocessing, feature_extraction, model_selection
 # from IPython.display import display, HTML
@@ -84,6 +85,9 @@ class GCN():
 
         # Baseline Performance Evaluation
         X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.3, shuffle=True, random_state=1)
+        y_train = target_encoding.transform(node_subjects.iloc[y_train])
+        y_test = target_encoding.transform(node_subjects.iloc[y_test])
+
         model_emb = keras.models.Sequential()
         model_emb.add(layers.Dense(train_targets.shape[1], activation='softmax', input_shape=(16,)))
         model_emb.compile(keras.optimizers.Adam(learning_rate=0.01), 
@@ -132,9 +136,9 @@ class GCN():
         train_flow = train_gen.flow(edge_ids_train, edge_labels_train)
 
         test_gen = FullBatchLinkGenerator(G_test, method="gcn")
-        test_flow = train_gen.flow(edge_ids_test, edge_labels_test)
+        test_flow = test_gen.flow(edge_ids_test, edge_labels_test)
 
-        gcn = GCN(
+        gcn = GCN_l(
             layer_sizes=[16, 16], activations=["relu", "relu"], generator=train_gen, dropout=0.3)
 
         x_inp, x_out = gcn.in_out_tensors()
@@ -165,6 +169,16 @@ class GCN():
         print("\nTest Set Metrics of the trained model:")
         for name, val in zip(model.metrics_names, test_metrics):
             print("\t{}: {:0.4f}".format(name, val))
+            
+        all_gen = FullBatchLinkGenerator(G, method="gcn")
+        embedding_model = keras.Model(inputs=x_inp, outputs=x_out)
+
+        # 모든 노드에 대한 임베딩 생성
+        node_gen = FullBatchNodeGenerator(G, method="gcn")
+        node_flow = node_gen.flow(G.nodes())
+        emb = embedding_model.predict(node_flow)
+
+        return emb.squeeze(0)  # 임베딩 반환
 
 
     def subgraph_learning(subgraphList, fea_mat,node_subjects,args):
@@ -192,7 +206,7 @@ class GCN():
         
         train_gen = generator.flow(train_subjects.index, train_targets)
         
-        gcn = GCN(
+        gcn = GCN_l(
         layer_sizes=[16, 16], activations=["relu", "relu"], generator=generator, dropout=0.5
         )
         
