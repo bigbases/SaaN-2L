@@ -90,6 +90,8 @@ class GraphSAGE():
         print("Evaluate the baseline performance on node classification task")
         results = model_emb.evaluate(X_test, y_test, batch_size=128)
         print("test loss, test acc:", results)
+        
+        return X
 
 
     def link_prediction(G, args):
