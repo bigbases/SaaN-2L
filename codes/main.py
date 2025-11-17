@@ -14,7 +14,7 @@ def main():
     
 
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--task',default='node')
+    parser.add_argument('--task',default='link')
     parser.add_argument('--model', default='gcn')
     parser.add_argument('--dataset', default='CiteSeer')
     parser.add_argument('--cd_algo', default='LP')
@@ -166,15 +166,32 @@ def main():
 
     # Merge two kinds of embeddings: Global and Local
 
-    node_embeddings_df = pd.DataFrame(node_embeddings).transpose()
-    ig = Graph.from_networkx(G.to_networkx()) # NetworkX to igraph 
-    ig.vs["id"] = ig.vs["_nx_name"]
-    merged_Graph = StellarGraph.from_networkx(ig.to_networkx(), node_features = node_embeddings_df) # Graph with trained embedding
+    #node_embeddings_df = pd.DataFrame(node_embeddings).transpose()
+    #ig = Graph.from_networkx(G.to_networkx()) # NetworkX to igraph 
+    #ig.vs["id"] = ig.vs["_nx_name"]
+    #merged_Graph = StellarGraph.from_networkx(ig.to_networkx(), node_features = node_embeddings_df) # Graph with trained embedding
+
+    ig = Graph.from_networkx(G.to_networkx())
+
+    # igraph index to node id
+    node_id_mapping = {i: ig.vs['_nx_name'][i] for i in range(ig.vcount())}
+
+    node_embeddings_with_names = {}
+    for idx, embedding in node_embeddings.items():
+        node_id = node_id_mapping[idx]
+        node_embeddings_with_names[node_id] = embedding
+
+    node_embeddings_df = pd.DataFrame.from_dict(node_embeddings_with_names, orient='index')
+
+    merged_Graph = sg.StellarGraph.from_networkx(G.to_networkx(), node_features=node_embeddings_df)
+
 
     # Downstream task with final embeddings
 
-    X_final_link = GCN.link_prediction(merged_Graph, args)
-    X_final_node = GCN.node_classification(merged_Graph, node_subjects, args)
+    if args.task == 'link': 
+        X_final_link = GCN.link_prediction(merged_Graph, args)
+    if args.task == 'node': 
+        X_final_node = GCN.node_classification(merged_Graph, node_subjects, args)
 
     
 
