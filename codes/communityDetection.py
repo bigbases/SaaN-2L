@@ -1,5 +1,5 @@
 from igraph import Graph
-
+import time
 def communityDetector(ig, algo_str):
     ig = Graph.from_networkx(ig.to_networkx())
     start = time.time()
