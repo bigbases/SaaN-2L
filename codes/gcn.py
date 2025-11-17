@@ -6,6 +6,7 @@ from stellargraph.mapper import FullBatchNodeGenerator
 from stellargraph.layer import GCN as GCN_l, LinkEmbedding
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow import keras
+import numpy as np
 
 from tensorflow.keras import layers, optimizers, losses, metrics, Model
 from sklearn import preprocessing, feature_extraction, model_selection
